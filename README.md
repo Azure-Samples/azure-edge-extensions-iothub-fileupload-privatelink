@@ -1,6 +1,6 @@
-# Project Name
+# Setting up Azure IoT Hub File Upload to Azure Storage through Private Endpoint
 
-(short, 1-3 sentenced, description of the project)
+How to secure Azure IoT Hub's file upload functionality by routing traffic to an Azure Storage account's private endpoint.
 
 ## Features
 
