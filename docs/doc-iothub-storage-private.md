@@ -54,38 +54,38 @@ In order to be able to configure the Application Gateway ensure:
 
 * Have configured a Public IP address for the front-end configuration
 * Have access to a custom DNS provider to configure your custom DNS or sub-domain entry
-  * Use a CNAME pointing to the DNS of the Public IP address in Azure. This will be in the form of xxx.region.cloudapp.azure.com
+  * Use a CNAME pointing to the DNS of the Public IP address in Azure. This will be in the form of `xxx.region.cloudapp.azure.com`
 * Have an SSL certificate in the form of .PFX file for the custom domain.
 
 ### Backend pool
 
 The backend pool is the endpoint to which the gateway will send traffic to. Because of private DNS resolution, you can use the normal Blob endpoint as it will resolve to the <accountname>.privatelink.blob.core.windows.net which points to the private endpoint of the Storage account.
 
-![!Application Gateway Backend Pool](assets/hub-spoke-storage-iot-appgw-backendpool.png)
+<img alt="Application Gateway Backend Pool" src="assets/hub-spoke-storage-iot-appgw-backendpool.png" width="500" />
 
 ### Backend setting
 
 Create the backend setting to send traffic to the backend pool using HTTPS.
 
-![!Application Gateway Backend Settings](assets/hub-spoke-storage-iot-appgw-backendsetting.png)
+<img alt="Application Gateway Backend Settings" src="assets/hub-spoke-storage-iot-appgw-backendsetting.png" width="500" />
 
 ### Health probe
 
 Create a new health probe pointing to the Azure Storage account. It is important to note that the HTTP response status code match list must include 400. This is because the probe is pointing to `/` root of the Blob endpoint which will be returning a 400 status code.
 
-![Application Gateway Health probe configuration](assets/hub-spoke-storage-iot-appgw-healthp.png)
+<img alt="Application Gateway Health probe configuration" src="assets/hub-spoke-storage-iot-appgw-healthp.png" width="500" />
 
 ### HTTPS listener
 
 The listener is the entry point in the Application Gateway, and this is where you will need to setup TLS certificate settings. Ensure you have an SSL certificate for the domain name you are mapping your domain to.
 
-![Application Gateway HTTPS listener settings](assets/hub-spoke-storage-iot-appgw-listener.png)
+<img alt="Application Gateway HTTPS listener settings" src="assets/hub-spoke-storage-iot-appgw-listener.png" width="500" />
 
 ### Application gateway Rule
 
 Finally ensure the rule is set to the new listener, backend pool target and backend settings.
 
-![Application Gateway Routing Rule](assets/hub-spoke-storage-iot-appgw-rule.png)
+<img alt="Application Gateway Routing Rule" src="assets/hub-spoke-storage-iot-appgw-rule.png" width="500" />
 
 ## Hub-Spoke networking topology with Azure Firewall
 
@@ -95,7 +95,7 @@ The configuration of the Storage account private endpoint, Azure IoT Hub and App
 
 An example of such an architecture applied to this scenario would look like this:
 
-![Hub-Spoke network topology with Azure Storage private and IoT Hub](assets/hub-spoke-storage-iothub.png)
+<img alt="Hub-Spoke network topology with Azure Storage private and IoT Hub" src="assets/hub-spoke-storage-iothub.png" width="500" />
 
 There is a GitHub repo with a set of Terraform modules to help you with the creation of such a Hub & Spoke topology created by Vincent Misson, co-author of this article: [Terraform Azure Resources](https://github.com/azurerm/terraform-azure-resources?tab=readme-ov-file#network-design).
 
