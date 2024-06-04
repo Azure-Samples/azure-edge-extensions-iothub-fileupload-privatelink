@@ -95,7 +95,7 @@ The configuration of the Storage account private endpoint, Azure IoT Hub and App
 
 An example of such an architecture applied to this scenario would look like this:
 
-<img alt="Hub-Spoke network topology with Azure Storage private and IoT Hub" src="assets/hub-spoke-storage-iothub.png" width="500" />
+<img alt="Hub-Spoke network topology with Azure Storage private and IoT Hub" src="./assets/hub-spoke-storage-iothub-2.png" width="600" />
 
 There is a GitHub repo with a set of Terraform modules to help you with the creation of such a Hub & Spoke topology created by Vincent Misson, co-author of this article: [Terraform Azure Resources](https://github.com/azurerm/terraform-azure-resources?tab=readme-ov-file#network-design).
 
