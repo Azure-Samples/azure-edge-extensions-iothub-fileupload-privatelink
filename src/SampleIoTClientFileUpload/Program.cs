@@ -45,8 +45,8 @@ else
 // Open device client
 await deviceClient.OpenAsync();
 
-// Set up twin update callback
-await deviceClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertyChanged, null);
+// Set up twin update callback, for this sample we exit the program so we comment it out
+// await deviceClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertyChanged, null);
 // Force loading desired properties from the service on startup
 var twin = await deviceClient.GetTwinAsync();
 await OnDesiredPropertyChanged(twin.Properties.Desired, deviceClient);
@@ -85,6 +85,7 @@ async Task UploadFileAsync(string filePath, DeviceClient deviceContext)
     if (!string.IsNullOrEmpty(_customStorageUri))
     {
         var uriBuilder = new UriBuilder(uploadUri);
+        // Replace the hostname with the custom one, keeping the SAS token in the URI
         uriBuilder.Host = _customStorageUri;
         uploadUri = uriBuilder.Uri;
     }

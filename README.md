@@ -12,7 +12,6 @@ This project provides different options for configuring Azure IoT Hub File uploa
 
 * [Documentation](./docs/doc-iothub-storage-private.md) with guidance an details on how you can accomplish this configuration in a Hub-Spoke network topology, leveraging Application Gateway, and Azure Firewall for traffic inspection
 * Quickstart: Azure CLI based step-by-step scripts with a simplified setup (single Virtual Network & Resource Group) and sample client app
-<!-- * Terraform IaC to provision and configure Hub-Spoke network topology with all components -->
 
 ## Getting Started
 
