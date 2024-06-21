@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D9690175-12CA-4675-9843-3BE05BB89B0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleIoTClientFileUpload", "src\SampleIoTClientFileUpload\SampleIoTClientFileUpload.csproj", "{0D330570-6DE9-4A75-93A0-C5ABCC4AC5D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerSideFileNotification", "src\ServerSideFileNotification\ServerSideFileNotification.csproj", "{F0A6072B-1E60-474D-AB15-EC1F3F37267E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D330570-6DE9-4A75-93A0-C5ABCC4AC5D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D330570-6DE9-4A75-93A0-C5ABCC4AC5D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D330570-6DE9-4A75-93A0-C5ABCC4AC5D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D330570-6DE9-4A75-93A0-C5ABCC4AC5D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0A6072B-1E60-474D-AB15-EC1F3F37267E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0A6072B-1E60-474D-AB15-EC1F3F37267E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0A6072B-1E60-474D-AB15-EC1F3F37267E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0A6072B-1E60-474D-AB15-EC1F3F37267E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0D330570-6DE9-4A75-93A0-C5ABCC4AC5D1} = {D9690175-12CA-4675-9843-3BE05BB89B0F}
+		{F0A6072B-1E60-474D-AB15-EC1F3F37267E} = {D9690175-12CA-4675-9843-3BE05BB89B0F}
+	EndGlobalSection
+EndGlobal
