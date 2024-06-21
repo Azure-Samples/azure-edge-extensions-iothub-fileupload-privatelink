@@ -22,11 +22,11 @@ sequenceDiagram
 
 ## Moving towards an Azure Storage account without public Internet access
 
-In regular deployments, because the Azure IoT client device needs to talk directly to the Storage account to upload the file, meaning this Storage account needs to allow incoming Internet traffic. Disabling Internet traffic would automatically block any client IoT devices from uploading files.
+In standard deployments, the Azure IoT client device must communicate directly with the Storage account to upload files, requiring that the Storage account allows incoming Internet traffic. Consequently, disabling Internet traffic would prevent client IoT devices from being able to upload files.
 
-Customers with more stringent networking requirements may want to leverage a common practice of making the Azure Storage account accessible only from within a private network and inspect any traffic through a firewall or gateway. Often the implementation will be in the form of a **Hub-Spoke network topology**. The concepts for this architecture is discussed in the Azure architecture center article: Hub-spoke network topology in [Azure Architecture Center | Microsoft Learn](https://learn.microsoft.com/azure/architecture/networking/architecture/hub-spoke?tabs=cli).
+Customers with more stringent landing zone networking requirements may want to leverage a common practice of making the Azure Storage account accessible only from within a private network and inspect any traffic through a firewall or gateway. Often the implementation will be in the form of a **Hub-Spoke network topology**. The concepts for this architecture is discussed in the Azure architecture center article: Hub-spoke network topology in [Azure Architecture Center | Microsoft Learn](https://learn.microsoft.com/azure/architecture/networking/architecture/hub-spoke?tabs=cli).
 
-In this article, we outline a strategy to enhance the security of Azure IoT Hub's file upload feature. This approach blocks direct internet traffic to the Storage account, permitting only the traffic routed through the inbound Application Gateway. This setup also enables traffic inspection via Azure Firewall for added security.
+In this article, we outline a strategy to enhance the security of Azure IoT Hub's file upload feature. This approach blocks direct Internet traffic to the Storage account, permitting only the traffic routed through the inbound Application Gateway. This setup also enables traffic inspection via Azure Firewall for added security.
 
 ## Communication between Azure IoT Hub and Azure Storage account
 
@@ -89,9 +89,9 @@ Finally ensure the rule is set to the new listener, backend pool target and back
 
 ## Hub-Spoke networking topology with Azure Firewall
 
-In the case you would like to setup Hub-Spoke networking topology, routing tables will ensure traffic from different Virtual Networks will  pass through  Azure Firewall for traffic inspection.
+In the case you would like to setup Hub-Spoke networking topology, routing tables will ensure traffic from different Virtual Networks tunnel through  Azure Firewall for traffic inspection.
 
-The configuration of the Storage account private endpoint, Azure IoT Hub and Application Gateway will be as describe in this article.
+The configuration of the Storage account private endpoint, Azure IoT Hub and Application Gateway will be as described in this article.
 
 An example of such an architecture applied to this scenario would look like this:
 
@@ -118,7 +118,7 @@ Example of the Device Twin Desired property:
 
 The device retrieves the `customdns` field from the Desired Twin and can use code for replacing the default Azure blob storage endpoint with this custom domain.
 
-You can view a sample of such retrieve and replace in the sample client code in the file [`Program.cs`](../src/SampleIoTClientFileUpload/Program.cs)
+You can view a sample of such "retrieve and replace" in the sample client code in the file [`Program.cs`](../src/SampleIoTClientFileUpload/Program.cs)
 
 The final high level flow for the file upload now looks like this:
 

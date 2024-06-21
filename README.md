@@ -44,7 +44,7 @@ Finally, two sample .NET apps interact with the resources deployed to showcase t
 * cd [repository name]
 * Open the project in Visual Studio Code `code .` and open a Bash terminal.
 * Log into your Azure account `az login [--tenant xxxx-xxx]` and set the default subscription `az account set -s <subscription>`
-* Prepare required environment variables to run the deployment scripts. We create a file in the folder `./temp` which is excluded from Git. 
+* Prepare required environment variables to run the deployment scripts. We create a file in the folder `./temp` which is excluded from Git.
 
   * Run the below to create the file `./temp/envvars.sh`, for `LOCATION` you can choose any Azure region supporting IoT Hub and Application Gateway.
 
