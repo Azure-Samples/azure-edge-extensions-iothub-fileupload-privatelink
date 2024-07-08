@@ -18,14 +18,11 @@ if [ -z "$TENANT_ID" ]; then
     echo "TENANT_ID is not set"
     exit 1
 fi
-if [ -z "$CERT_PASSWORD" ]; then
-    echo "CERT_PASSWORD is not set"
-    exit 1
-fi
 
 storage_account_name="st$PREFIX"
 vnet_name="vnet-$PREFIX"
 app_gateway_name="gw-$PREFIX"
+keyvault_name="kv-$PREFIX"
 ip_stat_name_gateway="ip-gw-$PREFIX"
 iprange_vnet="172.18.0.0/16"
 subnet_name_gateway="subnet-gw-$PREFIX"
@@ -59,8 +56,28 @@ az group create --name $RESOURCE_GROUP --location $LOCATION
 echo "Creating self-signed test certificate"
 # Generate a self-signed cert and PFX for testing without custom DNS
 openssl genrsa -out ./temp/sample_privateKey.key 2048
-openssl req -x509 -sha256 -nodes -days 365 -key ./temp/sample_privateKey.key -out ./temp/sample_appgwcert.crt --passout pass:$CERT_PASSWORD -subj "$commonNameFormat=$dns_label"
-openssl pkcs12 -export -out ./temp/sample_appgwcert.pfx -inkey ./temp/sample_privateKey.key -in ./temp/sample_appgwcert.crt --passin pass:$CERT_PASSWORD --passout pass:$CERT_PASSWORD
+openssl req -x509 -sha256 -nodes -days 365 -key ./temp/sample_privateKey.key -out ./temp/sample_appgwcert.crt -subj "$commonNameFormat=$dns_label"
+openssl pkcs12 -export -out ./temp/sample_appgwcert.pfx -inkey ./temp/sample_privateKey.key -in ./temp/sample_appgwcert.crt -passout pass:
+
+# Convert into base64 encoded strings to store in Key Vault
+base64 -w 0 ./temp/sample_appgwcert.pfx > ./temp/sample_appgwcert.pfx.base64
+base64 -w 0 ./temp/sample_appgwcert.crt > ./temp/sample_appgwcert.crt.base64
+base64 -w 0 ./temp/sample_privateKey.key > ./temp/sample_privateKey.key.base64
+
+# Create a Key Vault and add the cert
+echo "Creating Key Vault to store the certificate"
+az keyvault create --name $keyvault_name --resource-group $RESOURCE_GROUP --location $LOCATION --enable-rbac-authorization true
+# Give current user RBAC permission to the keyvault read and write secrets
+az role assignment create --role "Key Vault Secrets Officer" --assignee $(az ad signed-in-user show --query id -o tsv) --scope $(az keyvault show --name $keyvault_name --query id -o tsv)
+echo "Sleep 30 seconds for role propagation"
+sleep 30
+
+echo "Upload key vault secrets for cert"
+# Create secrets
+az keyvault secret set --vault-name $keyvault_name --name "AppGatewayCertPfx" --file ./temp/sample_appgwcert.pfx.base64 --content-type "application/x-pkcs12"
+# Upload the key vault secret for the key - not used beyond this demo but can be used for other purposes
+az keyvault secret set --vault-name $keyvault_name --name "AppGatewayCertKey" --file ./temp/sample_privateKey.key.base64 --content-type "application/x-pkcs12"
+az keyvault secret set --vault-name $keyvault_name --name "AppGatewayCertCrt" --file ./temp/sample_appgwcert.crt.base64 --content-type "application/x-pkcs12"
 
 echo "Creating Public IP for App Gateway"
 az network public-ip create \
@@ -71,7 +88,6 @@ az network public-ip create \
   --location $LOCATION
 
 echo "Creating Application Gateway and VNET"
-# subnet_resource_id=$(az network vnet subnet show --name $subnet_name_gateway --vnet-name $vnet_name --resource-group $RESOURCE_GROUP --query id --output tsv)
 # Using single command to create VNET & subnet due to some AZ CLI/API conflict which deletes the existing subnet
 az network application-gateway create --name $app_gateway_name \
     --location $LOCATION \
@@ -101,7 +117,7 @@ echo "Public IP FQDN: $ip_dns_fqdn"
 echo "Creating NSG and allow incoming 443 traffic"
 # Create NSG to allow incoming 443, and GatewayManager traffic to the Public IP
 az network nsg create --name nsg-$PREFIX --resource-group $RESOURCE_GROUP
-# TODO CHECK IF it's possible to allow only to the IP address static
+
 az network nsg rule create --name Allow-Web --nsg-name nsg-$PREFIX --resource-group $RESOURCE_GROUP \
     --priority 1000 --direction Inbound --source-address-prefixes '*' --source-port-ranges '*' \
     --destination-address-prefixes '*' --destination-port-ranges 80 443 --access Allow --protocol Tcp
@@ -112,7 +128,6 @@ az network nsg rule create --name AllowGatewayManager --nsg-name nsg-$PREFIX --r
 
 # Assign subnets to NSG
 az network vnet subnet update --name $subnet_name_gateway --vnet-name $vnet_name --resource-group $RESOURCE_GROUP --network-security-group nsg-$PREFIX
-az network vnet subnet update --name $subnet_name_private_link --vnet-name $vnet_name --resource-group $RESOURCE_GROUP --network-security-group nsg-$PREFIX
 
 echo "Creating Storage account $storage_account_name"
 # create storage account
@@ -185,14 +200,29 @@ az network application-gateway frontend-port create --port 443 \
     --resource-group $RESOURCE_GROUP \
     --name httpsPort
 
-echo "Creating sample certificate for App Gateway"
+# Create user-managed identity for the App Gateway
+az identity create --name "ident-$PREFIX" --resource-group $RESOURCE_GROUP
+identity_gateway_id=$(az identity show --name "ident-$PREFIX" --resource-group $RESOURCE_GROUP --query id -o tsv)
+identity_principal_id=$(az identity show --name "ident-$PREFIX" --resource-group $RESOURCE_GROUP -o tsv --query "principalId")
+
+echo "Set a managed identity for Application Gateway"
+az network application-gateway identity assign --resource-group $RESOURCE_GROUP --gateway-name $app_gateway_name --identity $identity_gateway_id
+# Assign RBAC app gateway > Key Vault Secrets User
+az role assignment create --role "Key Vault Secrets User" \
+    --scope $(az keyvault show --name $keyvault_name --query id -o tsv) \
+    --assignee-principal-type ServicePrincipal \
+    --assignee-object-id $identity_principal_id
+
+echo "Creating sample certificate for App Gateway linked to Key vault"
+secret_id_version=$(az keyvault secret show --vault-name $keyvault_name --name AppGatewayCertPfx --query id -o tsv) 
+# remove the version from the secret id
+secret_id=$(echo $secret_id_version | cut -d'/' -f1-5)
 # create SSL cert
 az network application-gateway ssl-cert create \
   --gateway-name $app_gateway_name \
   --resource-group $RESOURCE_GROUP \
   --name appGatewaySslCert \
-  --cert-file ./temp/sample_appgwcert.pfx \
-  --cert-password $CERT_PASSWORD
+  --key-vault-secret-id $secret_id
 
 echo "Creating listener for App Gateway"
 # listener
