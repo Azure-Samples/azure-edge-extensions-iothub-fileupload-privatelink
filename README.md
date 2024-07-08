@@ -54,7 +54,6 @@ Finally, two sample .NET apps interact with the resources deployed to showcase t
     >./temp/envvars.sh cat <<EOF
     # change the below set to match your environment based on Readme
     export TENANT_ID="xxx-xxxx-xxx-xxxx-xxxx"
-    export CERT_PASSWORD="xxx"
     export LOCATION="westeurope"
     export PREFIX="xxx"
     export RESOURCE_GROUP="rg-xxx-xxx"
@@ -95,16 +94,28 @@ curl --insecure "<APP_GATEWAY_SASURI copied output>"
 * Configure your custom DNS and SSL certificate for end to end SSL encryption.
 
   * Ensure you create a `CNAME` or `A` Record pointing to the DNS of the Azure Public IP created above.
-  * `CNAME` is the simpler approach and you can point it to the value output of the script in the form of `xxx.westeurope.cloudapp.azure.com`.
+  * `CNAME` is the simpler approach and you can point it to the value output of the script in the form of `xxx.<region>.cloudapp.azure.com`.
   * Create an SSL certificate for this domain, or ensure you have a valid wildcard domain.
-  * In Azure Portal, open the resource group you configured in the variables, and go to **Application Gateway**.
-  * In the Listeners, edit the `storageHttpsListener`.
-  * Upload a new certificate by choosing **Create new** and configuring the `.PFX` file, certificate name and password.
-  * Test the name resolution works for your CNAME record and directs to the Public IP address used by the application gateway
-  * Finally, test the custom URL and SAS URI without `--insecure` option as end to end SSL is now configured. the CURL should now be successful.
+  * Export the PFX file into a base64 encoded file. For example `base64 -w 0 ./temp/<YOURFILENAME_LOCATION>.pfx > ./temp/<YOURFILENAME_LOCATION>.pfx.base64`.
+  * Update the Key vault secret:
+
+  ```bash
+  keyvault_name="kv-$PREFIX"
+  az keyvault secret set --vault-name $keyvault_name --name "AppGatewayCertPfx" --file ./temp/<YOURFILENAME_LOCATION>.pfx.base64 --content-type "application/x-pkcs12"
+  ```
+
+  * Application Gateway polls the Key Vault every four-hour interval. You might need to force this to be sooner by updating a rule, listener or setting on the Application Gateway. See [Supported certificates - Tip](https://learn.microsoft.com/en-us/azure/application-gateway/key-vault-certs#supported-certificates).
+  * Test the name resolution works for your CNAME record and directs to the Public IP address used by the application gateway.
+  * If you want to ensure the SSL certificate from Key Vault is up to date and refreshed in Application Gateway, use OpenSSL to verify the currently attached certificate. You can also go the the Azure Portal, select the Application Gateway instance. In the Listeners section, choose Listener TLS certificates and note the Common Name and expiry of the `appGatewaySslCert`, should match your custom certificate.
+
+  ```bash
+  openssl s_client -connect <yourcustommappeddomain>:443 -showcerts </dev/null
+  ```
+
+  * Finally, test the custom URL and SAS URI without `--insecure` option as end to end SSL is now configured. the `CURL` should now be successful.
   
 ```bash
-curl https://<yourcustommappeddomain>/test/sample.txt?<SAS>
+curl "https://<yourcustommappeddomain>/test/sample.txt?<SAS>"
 ```
 
 #### Azure IoT Hub deployment and configuration
