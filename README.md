@@ -52,29 +52,29 @@ Finally, two sample .NET apps interact with the resources deployed to showcase t
 1. Open the project in Visual Studio Code and open a Bash terminal inside.
 
 1. Log into your Azure account and select your subscription.
- 
-    ```bash
-    az login [--tenant xxxx-xxx]
-    ```
+
+   ```bash
+   az login [--tenant xxxx-xxx]
+   ```
 
 1. Prepare required environment variables to run the deployment scripts. We create a file in the folder `./temp` which is excluded from Git.
 
 1. Create the `./temp/envvars.sh` file. For `LOCATION` you can choose any Azure region supporting IoT Hub and Application Gateway.
 
-    ```bash
-    if [ ! -d "./temp" ]; then
-        mkdir ./temp
-    fi
-    >./temp/envvars.sh cat <<EOF
-    # change the below set to match your environment based on Readme
-    export TENANT_ID="xxx-xxxx-xxx-xxxx-xxxx"
-    export LOCATION="westeurope"
-    export PREFIX="xxx"
-    export RESOURCE_GROUP="rg-xxx-xxx"
-    EOF
+   ```bash
+   if [ ! -d "./temp" ]; then
+       mkdir ./temp
+   fi
+   >./temp/envvars.sh cat <<EOF
+   # change the below set to match your environment based on Readme
+   export TENANT_ID="xxx-xxxx-xxx-xxxx-xxxx"
+   export LOCATION="westeurope"
+   export PREFIX="xxx"
+   export RESOURCE_GROUP="rg-xxx-xxx"
+   EOF
 
-    code ./temp/envvars.sh
-    ```
+   code ./temp/envvars.sh
+   ```
 
    The newly created `.sh` file should now open in Visual Studio Code.
 
@@ -84,9 +84,9 @@ Finally, two sample .NET apps interact with the resources deployed to showcase t
 
 1. Load the variables.
 
-    ```bash
-    source ./temp/envvars.sh
-    ```
+   ```bash
+   source ./temp/envvars.sh
+   ```
 
 #### Azure Resources with Virtual Network, private Key Vault, private Storage and Application Gateway
 
@@ -97,17 +97,17 @@ Deploy the Azure components for setting up Virtual Network, self-signed SSL cert
 
 1. From the root directory of this repo, run the first part of the deployment. The script will use the environment variables and build composed resource names by appending the `PREFIX` variable as Azure resource names.
 
-```bash
-./deploy/quickstart-agw-storage.sh
-```
+   ```bash
+   ./deploy/quickstart-agw-storage.sh
+   ```
 
 2. It will take a few minutes to deploy all resources. Keep the terminal open and take note of some of the generated DNS entries.
 3. This scripts also uploads a `sample.txt` file to a Blob storage container and generates a SAS URI token for testing.
 4. From a bash terminal, try out a `CURL` command to the DNS of the Public IP address attached to the Application Gateway.
 
-```bash
-curl --insecure "<APP_GATEWAY_SASURI copied output>"
-```
+   ```bash
+   curl --insecure "<APP_GATEWAY_SASURI copied output>"
+   ```
 
 5. Run the same command with the Blob Public URI printed out by the script `BLOB_SASURI` value. Verify this does not succeed since this Storage account is blocking direct Internet traffic.
 6. Configure your custom DNS (through your DNS provider) and SSL certificate for end-to-end SSL encryption.
@@ -118,10 +118,10 @@ curl --insecure "<APP_GATEWAY_SASURI copied output>"
    4. Export the PFX file into a base64 encoded file. For example `base64 -w 0 ./temp/<YOURFILENAME_LOCATION>.pfx > ./temp/<YOURFILENAME_LOCATION>.pfx.base64`.
    5. Update the Key vault secret:
 
-    ```bash
-    keyvault_name="kv-$PREFIX"
-    az keyvault secret set --vault-name $keyvault_name --name "AppGatewayCertPfx" --file ./temp/<YOURFILENAME_LOCATION>.pfx.base64 --content-type "application/x-pkcs12"
-    ```
+   ```bash
+   keyvault_name="kv-$PREFIX"
+   az keyvault secret set --vault-name $keyvault_name --name "AppGatewayCertPfx" --file ./temp/<YOURFILENAME_LOCATION>.pfx.base64 --content-type "application/x-pkcs12"
+   ```
 
    6. Application Gateway polls the Key Vault every four-hour interval. You might need to force this to be sooner by updating a rule, listener or setting on the Application Gateway. See [Supported certificates - Tip](https://learn.microsoft.com/en-us/azure/application-gateway/key-vault-certs#supported-certificates).
    7. Test the name resolution works for your CNAME record and directs to the Public IP address used by the application gateway.
