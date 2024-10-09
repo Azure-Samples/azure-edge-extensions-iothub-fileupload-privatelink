@@ -59,7 +59,7 @@ Finally, two sample .NET apps interact with the resources deployed to showcase t
 
 1. Prepare required environment variables to run the deployment scripts. We create a file in the folder `./temp` which is excluded from Git.
 
-   1. Run the below to create the file `./temp/envvars.sh`, for `LOCATION` you can choose any Azure region supporting IoT Hub and Application Gateway.
+1. Create the `./temp/envvars.sh` file. For `LOCATION` you can choose any Azure region supporting IoT Hub and Application Gateway.
 
     ```bash
     if [ ! -d "./temp" ]; then
