@@ -105,7 +105,7 @@ Deploy the Azure components for setting up Virtual Network, self-signed SSL cert
 
    This scripts also uploads a `sample.txt` file to a Blob storage container and generates a SAS URI token for testing.
 
-   From a bash terminal, try out a `CURL` command to the DNS of the Public IP address attached to the Application Gateway.
+1. From a bash terminal, try out a `CURL` command to the DNS of the Public IP address attached to the Application Gateway.
 
    ```bash
    curl --insecure "<APP_GATEWAY_SASURI copied output>"
@@ -119,7 +119,7 @@ Deploy the Azure components for setting up Virtual Network, self-signed SSL cert
 
    1. Ensure you create a `CNAME` or `A` Record pointing to the DNS of the Azure Public IP created above.
 
-       `CNAME` is the simpler approach and you can point it to the value output of the script in the form of `xxx.<region>.cloudapp.azure.com`.
+      `CNAME` is the simpler approach and you can point it to the value output of the script in the form of `xxx.<region>.cloudapp.azure.com`.
 
    1. Create an SSL certificate for this domain, or ensure you have a valid wildcard domain.
 
@@ -131,7 +131,7 @@ Deploy the Azure components for setting up Virtual Network, self-signed SSL cert
       base64 -w 0 ./temp/<YOURFILENAME_LOCATION>.pfx > ./temp/<YOURFILENAME_LOCATION>.pfx.base64
       ```
 
-   1. Update the Key vault secret:
+1. Update the Key vault secret:
 
    ```bash
    keyvault_name="kv-$PREFIX"
@@ -140,9 +140,11 @@ Deploy the Azure components for setting up Virtual Network, self-signed SSL cert
 
    Application Gateway polls the Key Vault every four-hour interval. You might need to force this to be sooner by updating a rule, listener or setting on the Application Gateway. See [Supported certificates - Tip](https://learn.microsoft.com/en-us/azure/application-gateway/key-vault-certs#supported-certificates).
 
-   1. Test the name resolution works for your CNAME record and directs to the Public IP address used by the application gateway.
+1. Test the name resolution works for your CNAME record and directs to the Public IP address used by the application gateway.
 
-   1. If you want to ensure the SSL certificate from Key Vault is up to date and refreshed in Application Gateway, use OpenSSL to verify the currently attached certificate. You can also go the the Azure Portal, select the Application Gateway instance. In the Listeners section, choose Listener TLS certificates and note the Common Name and expiry of the `appGatewaySslCert`, should match your custom certificate.
+   If you want to ensure the SSL certificate from Key Vault is up to date and refreshed in Application Gateway, use OpenSSL to verify the currently attached certificate.
+
+   You can also go the Azure portal, select the Application Gateway instance. In the Listeners section, choose Listener TLS certificates and note the Common Name and expiry of the `appGatewaySslCert`, should match your custom certificate.
 
       ```bash
       openssl s_client -connect <yourcustommappeddomain>:443 -showcerts </dev/null
