@@ -158,13 +158,25 @@ To validate a client device on public Internet can leverage file upload with a c
 
 Run the File Upload notifications server application:
 
-1. In a new terminal `CD` into the directory `./src/ServerSideFileNotification/`.
-2. Build the .NET app: `dotnet build`.
-3. Run the sample application. You will need to pass in the Service connection string from the `./deploy/quickstart-add-iothub.sh` script.
+1. In a new terminal go into the application directory
 
-```bash
-dotnet run "<iot hub service connection string>"
-```
+   ```bash
+   cd ./src/ServerSideFileNotification/
+   ```
+
+1. Build the .NET app.
+
+   ```bash
+   dotnet build
+   ```
+
+1. Run the sample application.
+
+   You will need to pass in the Service connection string from the `./deploy/quickstart-add-iothub.sh` script.
+
+   ```bash
+   dotnet run "<iot hub service connection string>"
+   ```
 
 4. Leave this application running.
 
