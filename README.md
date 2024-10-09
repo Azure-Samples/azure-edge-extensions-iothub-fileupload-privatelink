@@ -23,7 +23,7 @@ This project provides different options for configuring Azure IoT Hub file uploa
 * Visual Studio Code installed on your development machine. For more information, see [Download Visual Studio Code](https://code.visualstudio.com/download).
 * [OpenSSL Command Line Tool](https://github.com/openssl/openssl?tab=readme-ov-file)
 * Bash terminal, on Windows you can use WSL
-* [.NET SDK 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) (if you wish to run the client and server samples for file upload)
+* [.NET SDK 8](https://dotnet.microsoft.com/download/dotnet/8.0) (if you wish to run the client and server samples for file upload)
 * DNS provider if you wish to test HTTPS with your custom domain, and SSL Certificate for your custom domain
 
 > [!TIP]
@@ -31,7 +31,7 @@ This project provides different options for configuring Azure IoT Hub file uploa
 
 ### Quickstart
 
-<img alt="Quickstart components diagram" src="docs/assets/quickstart-iothub-file-upload-private-link.png" width="500" />
+![Quickstart components diagram](docs/assets/quickstart-iothub-file-upload-private-link.png)
 
 This quickstart provides instructions on how to set up Azure IoT Hub's file upload functionality through an Azure Storage account that only allows private connections, through step-by-step scripts. The scripts deploy and configure a simplified set of Azure resources to showcase Azure Storage with private endpoint, Application Gateway and Azure IoT Hub routing to Azure Storage. The Storage account disables any public Internet access and only accessible within the Virtual Network. In this quickstart there is no Azure Firewall for traffic inspection.
 Finally, two sample .NET apps interact with the resources deployed to showcase the end-to-end data flows.
@@ -93,7 +93,7 @@ Finally, two sample .NET apps interact with the resources deployed to showcase t
 Deploy the Azure components for setting up Virtual Network, self-signed SSL certificate, Storage, Private Link, custom private DNS and Application Gateway configured to talk to the Storage account. This allows you to validate the flow before configuring Azure IoT Hub and client communication. The SSL certificate is stored in Azure Key Vault.
 
 > [!WARNING]
-> Azure Key Vault used in this sample has network rules to deny public internet access, but has an exception to allow the current user's IP address for this quickstart setup. In real environments we recommend removing this rule and integrating your service access through [Private Endpoint](https://learn.microsoft.com/en-us/azure/key-vault/general/private-link-service?tabs=portal).
+> Azure Key Vault used in this sample has network rules to deny public internet access, but has an exception to allow the current user's IP address for this quickstart setup. In real environments we recommend removing this rule and integrating your service access through [Private Endpoint](https://learn.microsoft.com/azure/key-vault/general/private-link-service).
 
 1. From the root directory of this repo, run the first part of the deployment. The script will use the environment variables and build composed resource names by appending the `PREFIX` variable as Azure resource names.
 
@@ -101,41 +101,58 @@ Deploy the Azure components for setting up Virtual Network, self-signed SSL cert
    ./deploy/quickstart-agw-storage.sh
    ```
 
-2. It will take a few minutes to deploy all resources. Keep the terminal open and take note of some of the generated DNS entries.
-3. This scripts also uploads a `sample.txt` file to a Blob storage container and generates a SAS URI token for testing.
-4. From a bash terminal, try out a `CURL` command to the DNS of the Public IP address attached to the Application Gateway.
+   It will take a few minutes to deploy all resources. Keep the terminal open and take note of some of the generated DNS entries.
+
+   This scripts also uploads a `sample.txt` file to a Blob storage container and generates a SAS URI token for testing.
+
+   From a bash terminal, try out a `CURL` command to the DNS of the Public IP address attached to the Application Gateway.
 
    ```bash
    curl --insecure "<APP_GATEWAY_SASURI copied output>"
    ```
 
-5. Run the same command with the Blob Public URI printed out by the script `BLOB_SASURI` value. Verify this does not succeed since this Storage account is blocking direct Internet traffic.
-6. Configure your custom DNS (through your DNS provider) and SSL certificate for end-to-end SSL encryption.
+1. Run the same command with the Blob Public URI printed out by the script `BLOB_SASURI` value.
+
+   Verify this does not succeed since this Storage account is blocking direct Internet traffic.
+
+1. Configure your custom DNS (through your DNS provider) and SSL certificate for end-to-end SSL encryption.
 
    1. Ensure you create a `CNAME` or `A` Record pointing to the DNS of the Azure Public IP created above.
-   2. `CNAME` is the simpler approach and you can point it to the value output of the script in the form of `xxx.<region>.cloudapp.azure.com`.
-   3. Create an SSL certificate for this domain, or ensure you have a valid wildcard domain.
-   4. Export the PFX file into a base64 encoded file. For example `base64 -w 0 ./temp/<YOURFILENAME_LOCATION>.pfx > ./temp/<YOURFILENAME_LOCATION>.pfx.base64`.
-   5. Update the Key vault secret:
+
+       `CNAME` is the simpler approach and you can point it to the value output of the script in the form of `xxx.<region>.cloudapp.azure.com`.
+
+   1. Create an SSL certificate for this domain, or ensure you have a valid wildcard domain.
+
+   1. Export the PFX file into a base64 encoded file.
+
+      For example.
+
+      ```bash
+      base64 -w 0 ./temp/<YOURFILENAME_LOCATION>.pfx > ./temp/<YOURFILENAME_LOCATION>.pfx.base64
+      ```
+
+   1. Update the Key vault secret:
 
    ```bash
    keyvault_name="kv-$PREFIX"
    az keyvault secret set --vault-name $keyvault_name --name "AppGatewayCertPfx" --file ./temp/<YOURFILENAME_LOCATION>.pfx.base64 --content-type "application/x-pkcs12"
    ```
 
-   6. Application Gateway polls the Key Vault every four-hour interval. You might need to force this to be sooner by updating a rule, listener or setting on the Application Gateway. See [Supported certificates - Tip](https://learn.microsoft.com/en-us/azure/application-gateway/key-vault-certs#supported-certificates).
-   7. Test the name resolution works for your CNAME record and directs to the Public IP address used by the application gateway.
-   8. If you want to ensure the SSL certificate from Key Vault is up to date and refreshed in Application Gateway, use OpenSSL to verify the currently attached certificate. You can also go the the Azure Portal, select the Application Gateway instance. In the Listeners section, choose Listener TLS certificates and note the Common Name and expiry of the `appGatewaySslCert`, should match your custom certificate.
+   Application Gateway polls the Key Vault every four-hour interval. You might need to force this to be sooner by updating a rule, listener or setting on the Application Gateway. See [Supported certificates - Tip](https://learn.microsoft.com/en-us/azure/application-gateway/key-vault-certs#supported-certificates).
 
-    ```bash
-    openssl s_client -connect <yourcustommappeddomain>:443 -showcerts </dev/null
-    ```
+   1. Test the name resolution works for your CNAME record and directs to the Public IP address used by the application gateway.
 
-   6. Finally, test the custom URL and SAS URI without `--insecure` option as end to end SSL is now configured. the `CURL` should now be successful.
+   1. If you want to ensure the SSL certificate from Key Vault is up to date and refreshed in Application Gateway, use OpenSSL to verify the currently attached certificate. You can also go the the Azure Portal, select the Application Gateway instance. In the Listeners section, choose Listener TLS certificates and note the Common Name and expiry of the `appGatewaySslCert`, should match your custom certificate.
+
+      ```bash
+      openssl s_client -connect <yourcustommappeddomain>:443 -showcerts </dev/null
+      ```
+
+1. Finally, test the custom URL and SAS URI without `--insecure` option as end to end SSL is now configured. the `CURL` should now be successful.
   
-    ```bash
-    curl "https://<yourcustommappeddomain>/test/sample.txt?<SAS>"
-    ```
+   ```bash
+   curl "https://<yourcustommappeddomain>/test/sample.txt?<SAS>"
+   ```
 
 #### Azure IoT Hub deployment and configuration
 
@@ -144,13 +161,15 @@ Deploy Azure IoT Hub and configure service communication to Azure Storage for Fi
 > [!TIP]
 > If you don't have custom DNS and SSL setup completed, use a dummy value when calling the script.
 
-1. Run the following script to deploy and configure Azure IoT Hub and Storage. The names of the resources are identical to the first script and composed by the environment variables loaded upfront.
+1. Run the following script to deploy and configure Azure IoT Hub and Storage. 
+
+   The names of the resources are identical to the first script and composed by the environment variables loaded upfront.
 
    ```bash
    ./deploy/quickstart-add-iothub.sh "<your_custom_dns>"
    ```
 
-2. The script will output a sample device connection string, and a service connect endpoint connection string. You will use these in the IoT client sample.
+   The script will output a sample device connection string, and a service connect endpoint connection string. You will use these in the IoT client sample.
 
 #### IoT Client sample
 
