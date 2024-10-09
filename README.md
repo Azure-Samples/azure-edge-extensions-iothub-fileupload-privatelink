@@ -42,8 +42,12 @@ Finally, two sample .NET apps interact with the resources deployed to showcase t
 #### Setup
 
 1. Open a Bash terminal.
-2. `git clone` this repo.
-3. Move into the cloned repo folder `cd [repository name]`.
+1. Clone this repository and go to the root directory.
+
+   ```bash
+   git clone https://github.com/Azure-Samples/azure-edge-extensions-iothub-fileupload-privatelink
+   cd azure-edge-extensions-iothub-fileupload-privatelink
+   ```
 4. Open the project in Visual Studio Code `code .` and open a Bash terminal.
 5. Log into your Azure account `az login [--tenant xxxx-xxx]` and select your default subscription.
 6. Prepare required environment variables to run the deployment scripts. We create a file in the folder `./temp` which is excluded from Git.
