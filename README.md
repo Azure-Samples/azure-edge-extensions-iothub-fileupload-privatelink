@@ -76,10 +76,13 @@ Finally, two sample .NET apps interact with the resources deployed to showcase t
     code ./temp/envvars.sh
     ```
 
-   2. The newly created `.sh` file should now open in Visual Studio Code.
-   3. Edit the values to your preference, ensure `TENANT_ID` corresponds to your Azure tenant.
-   4. For `PREFIX` use a short 5 character string that can be unique for the resource name composition.
-   5. Load the variables by running:
+   The newly created `.sh` file should now open in Visual Studio Code.
+
+1. Edit the values to your preference, ensure `TENANT_ID` corresponds to your Azure tenant.
+
+1. Set `PREFIX` to a short 5-character string that is unique for the resource name composition.
+
+1. Load the variables.
 
     ```bash
     source ./temp/envvars.sh
