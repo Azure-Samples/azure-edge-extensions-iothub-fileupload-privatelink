@@ -186,8 +186,13 @@ Run the File Upload notifications server application:
 
 Run the IoT Client sample application:
 
-1. In a new bash terminal `CD` into the directory `./src/SampleIoTClientFileUpload/`.
-2. Prepare a `.env` file for the required variables:
+1. In a new bash terminal change into the IoT client directory
+
+    ```bash
+    ./src/SampleIoTClientFileUpload/
+    ```
+
+1. Prepare a `.env` file for the required variables.
 
 ```bash
 >.env cat <<EOF
