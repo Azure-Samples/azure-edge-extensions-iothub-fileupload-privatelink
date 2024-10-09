@@ -92,8 +92,8 @@ Finally, two sample .NET apps interact with the resources deployed to showcase t
 
 Deploy the Azure components for setting up Virtual Network, self-signed SSL certificate, Storage, Private Link, custom private DNS and Application Gateway configured to talk to the Storage account. This allows you to validate the flow before configuring Azure IoT Hub and client communication. The SSL certificate is stored in Azure Key Vault.
 
-> [! WARNING]
-> [Azure Key Vault in this sample has network rules to deny public internet access, but has an exception to allow the current user's IP address for this quickstart setup. In real environments we recommend removing this rule and integrating your service access through [Private Endpoint](https://learn.microsoft.com/en-us/azure/key-vault/general/private-link-service?tabs=portal).]
+> [!WARNING]
+> Azure Key Vault used in this sample has network rules to deny public internet access, but has an exception to allow the current user's IP address for this quickstart setup. In real environments we recommend removing this rule and integrating your service access through [Private Endpoint](https://learn.microsoft.com/en-us/azure/key-vault/general/private-link-service?tabs=portal).
 
 1. From the root directory of this repo, run the first part of the deployment. The script will use the environment variables and build composed resource names by appending the `PREFIX` variable as Azure resource names.
 
