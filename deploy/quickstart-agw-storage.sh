@@ -29,6 +29,8 @@ subnet_name_gateway="subnet-gw-$PREFIX"
 subnet_iprange_gateway="172.18.2.0/24"
 subnet_name_private_link="subnet-pe-$PREFIX"
 subnet_iprange_private_link="172.18.1.0/24"
+subnet_name_kv="subnet-kv-$PREFIX"
+subnet_iprange_kv="172.18.3.0/24"
 private_link_name="pe-$PREFIX"
 public_ip_gw="pip-$PREFIX"
 dns_label="mydomain-$PREFIX"
@@ -65,8 +67,12 @@ base64 -w 0 ./temp/sample_appgwcert.crt > ./temp/sample_appgwcert.crt.base64
 base64 -w 0 ./temp/sample_privateKey.key > ./temp/sample_privateKey.key.base64
 
 # Create a Key Vault and add the cert
-echo "Creating Key Vault to store the certificate"
-az keyvault create --name $keyvault_name --resource-group $RESOURCE_GROUP --location $LOCATION --enable-rbac-authorization true
+echo "Creating Key Vault to store the certificate, disable public network traffic but allow Azure services"
+az keyvault create --name $keyvault_name --resource-group $RESOURCE_GROUP --location $LOCATION --enable-rbac-authorization true --default-action Deny --bypass AzureServices
+# Enable current IP to access the keyvault
+echo "Updating Key Vault network rule (current IP)"
+current_ip=$(curl -s ifconfig.me)
+az keyvault network-rule add --name $keyvault_name --resource-group $RESOURCE_GROUP --ip-address $current_ip
 # Give current user RBAC permission to the keyvault read and write secrets
 az role assignment create --role "Key Vault Secrets Officer" --assignee $(az ad signed-in-user show --query id -o tsv) --scope $(az keyvault show --name $keyvault_name --query id -o tsv)
 echo "Sleep 30 seconds for role propagation"
@@ -156,6 +162,16 @@ cloudapp_uri="https://$ip_dns_fqdn/test/sample.txt?$sas_token"
 echo "Disable public access to the storage account"
 # Disable public network access
 az storage account update --name $storage_account_name --resource-group $RESOURCE_GROUP --default-action Deny
+
+echo "Creating subnet for Key Vault and assigning network rule"
+subnetid_kv=$(az network vnet subnet create --name $subnet_name_kv \
+    --resource-group $RESOURCE_GROUP \
+    --vnet-name $vnet_name \
+    --address-prefixes "$subnet_iprange_kv" \
+    --service-endpoints "Microsoft.KeyVault" \
+    --query id --output tsv)
+
+az keyvault network-rule add --resource-group "$RESOURCE_GROUP" --name $keyvault_name --subnet $subnetid_kv
 
 echo "Creating Private Endpoint for the Storage account"
 # Create the private endpoint
