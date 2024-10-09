@@ -181,7 +181,8 @@ Run the File Upload notifications server application:
    dotnet run "<iot hub service connection string>"
    ```
 
-4. Leave this application running.
+
+1. Leave this application running.
 
 Run the IoT Client sample application:
 
