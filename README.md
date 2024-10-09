@@ -146,9 +146,9 @@ Deploy Azure IoT Hub and configure service communication to Azure Storage for Fi
 
 1. Run the following script to deploy and configure Azure IoT Hub and Storage. The names of the resources are identical to the first script and composed by the environment variables loaded upfront.
 
-```bash
-./deploy/quickstart-add-iothub.sh "<your_custom_dns>"
-```
+   ```bash
+   ./deploy/quickstart-add-iothub.sh "<your_custom_dns>"
+   ```
 
 2. The script will output a sample device connection string, and a service connect endpoint connection string. You will use these in the IoT client sample.
 
@@ -181,29 +181,28 @@ Run the File Upload notifications server application:
    dotnet run "<iot hub service connection string>"
    ```
 
-
 1. Leave this application running.
 
 Run the IoT Client sample application:
 
 1. In a new bash terminal change into the IoT client directory
 
-    ```bash
-    ./src/SampleIoTClientFileUpload/
-    ```
+   ```bash
+   ./src/SampleIoTClientFileUpload/
+   ```
 
 1. Prepare a `.env` file for the required variables.
 
-```bash
->.env cat <<EOF
-IOT_HUB_HOSTNAME="TODO.azure-devices.net"
-IOT_HUB_CONNSTRING="TODO"
-DEVICE_ID="myDeviceOne"
-AUTH_TYPE="symmetric_key"
-EOF
-    
-code .env
-```
+   ```bash
+   >.env cat <<EOF
+   IOT_HUB_HOSTNAME="TODO.azure-devices.net"
+   IOT_HUB_CONNSTRING="TODO"
+   DEVICE_ID="myDeviceOne"
+   AUTH_TYPE="symmetric_key"
+   EOF
+      
+   code .env
+   ```
 
    Ensure you replace the variable contents based on values output by the IoT Hub creation script.
 
@@ -214,7 +213,7 @@ code .env
    dotnet run
    ```
 
-6. Review the upload is successful.
+1. Review the upload is successful.
 
    Switch to the terminal running the server application and note the notification has arrived.
 
