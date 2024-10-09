@@ -19,7 +19,7 @@ This project provides different options for configuring Azure IoT Hub file uploa
 
 * An Azure subscription. If you don't have an Azure subscription, [create one for free](https://azure.microsoft.com/free/) before you begin.
 * Azure subscription RBAC permissions: either Contributor role, or if using an existing resource group, use an identity that has **Microsoft/Authorization/roleAssignments/write** permissions at the resource group level.
-* [Azure Command Line](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli).
+* [Azure Command Line](https://learn.microsoft.com/cli/azure/install-azure-cli).
 * Visual Studio Code installed on your development machine. For more information, see [Download Visual Studio Code](https://code.visualstudio.com/download).
 * [OpenSSL Command Line Tool](https://github.com/openssl/openssl?tab=readme-ov-file)
 * Bash terminal, on Windows you can use WSL
