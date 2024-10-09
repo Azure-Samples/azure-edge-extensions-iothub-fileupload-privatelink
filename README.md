@@ -93,7 +93,7 @@ Finally, two sample .NET apps interact with the resources deployed to showcase t
 Deploy the Azure components for setting up Virtual Network, self-signed SSL certificate, Storage, Private Link, custom private DNS and Application Gateway configured to talk to the Storage account. This allows you to validate the flow before configuring Azure IoT Hub and client communication. The SSL certificate is stored in Azure Key Vault.
 
 > [!WARNING]
-> Azure Key Vault used in this sample has network rules to deny public internet access, but has an exception to allow the current user's IP address for this quickstart setup. In real environments we recommend removing this rule and integrating your service access through [Private Endpoint](https://learn.microsoft.com/azure/key-vault/general/private-link-service).
+> Azure Key Vault in this sample has network rules to deny public internet access, but has an exception to allow the current user's IP address for this quickstart setup. In real environments we recommend removing this rule and integrating your service access through [Private Endpoint](https://learn.microsoft.com/azure/key-vault/general/private-link-service).
 
 1. From the root directory of this repo, run the first part of the deployment. The script will use the environment variables and build composed resource names by appending the `PREFIX` variable as Azure resource names.
 
@@ -146,9 +146,9 @@ Deploy the Azure components for setting up Virtual Network, self-signed SSL cert
 
    You can also go the Azure portal, select the Application Gateway instance. In the Listeners section, choose Listener TLS certificates and note the Common Name and expiry of the `appGatewaySslCert`, should match your custom certificate.
 
-      ```bash
-      openssl s_client -connect <yourcustommappeddomain>:443 -showcerts </dev/null
-      ```
+   ```bash
+   openssl s_client -connect <yourcustommappeddomain>:443 -showcerts </dev/null
+   ```
 
 1. Finally, test the custom URL and SAS URI without `--insecure` option as end to end SSL is now configured. the `CURL` should now be successful.
   
