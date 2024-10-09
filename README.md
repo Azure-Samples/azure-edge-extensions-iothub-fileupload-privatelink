@@ -205,11 +205,18 @@ EOF
 code .env
 ```
 
-3. Ensure you replace the variable contents based on values output by the IoT Hub creation script.
-4. Build the .NET application: `dotnet build`.
-5. Run the .NET client application: `dotnet run`.
+   Ensure you replace the variable contents based on values output by the IoT Hub creation script.
+
+1. Build and run the .NET application.
+
+   ```bash
+   dotnet build
+   dotnet run
+   ```
+
 6. Review the upload is successful.
-7. Switch to the terminal running the server application and note the notification has arrived.
+
+   Switch to the terminal running the server application and note the notification has arrived.
 
 ### Clean-up Azure resources
 
